@@ -15,6 +15,7 @@ const app = express();
 
 // require database configuration
 require('./configs/db.config');
+require('./configs/sessions.config')(app);
 
 // Middleware Setup
 app.use(logger('dev'));
@@ -33,5 +34,18 @@ app.locals.title = 'Express - Generated with IronGenerator';
 
 const index = require('./routes/index.routes');
 app.use('/', index);
+
+const auth = require('./routes/index.routes');
+app.use('/', auth);
+
+// catch all errors from handler
+app.use((error, req, res) => {
+    res.locals.message = error.message;
+    res.locals.error = req.app.get('env') === 'development' ? error : {};
+
+    // render the error page
+    res.status(error.status || 500);
+    res.render('error');
+});
 
 module.exports = app;
